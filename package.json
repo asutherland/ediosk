@@ -1,0 +1,7 @@
+{
+    "id": "jid0-UL33fooVBed3cL9CuyXEF2pnI3g", 
+    "main": "ediosk/main", 
+    "name": "ediosk", 
+    "description": "Editor Kiosk Interface",
+    "dependencies": ["wmsy"]
+}
