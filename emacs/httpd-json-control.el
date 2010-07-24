@@ -75,10 +75,13 @@
 ;; the following functions are GETs with side-effects, which is very bad of us.
 ;; even worse, they just return empty junk.
 
+;; select the given window (and its frame)
 (defun httpd/select-window (uri-query req uri-path)
   "Select the window identified by the given window-id."
-  (select-window (get-window-with-id (string-to-number (cadr (assoc "window" uri-query)))))
-  "text/plain")
+  (let ((window (get-window-with-id (string-to-number (cadr (assoc "window" uri-query))))))
+    (select-window window)
+    (select-frame-set-input-focus (window-frame window))
+    "text/plain"))
 
 (defun httpd/show-buffer-in-window (uri-query req uri-path)
   "Make the referenced buffer visible in the referenced window."
