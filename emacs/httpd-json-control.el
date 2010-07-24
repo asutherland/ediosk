@@ -11,6 +11,7 @@
   (insert
    (json-encode
     `((rev . 1)
+      (now . ,(current-time))
       (buffers . ,(vconcat
                    (mapcar
                     (lambda (b)
