@@ -58,7 +58,7 @@
                                                      (window-buffer w)))
                                          (selected . ,(eq w
                                                           (frame-selected-window f)))
-                                         (edges . ,(window-edges w))
+                                         (pixelEdges . ,(window-pixel-edges w))
                                          ))
                                      (window-list f))))
                         ))
@@ -66,13 +66,24 @@
       )))
   "application/json")
 
-;; this function is currently verbatim from Chunye Wang's httpd-buffers.el,
-;;  but is going to stop being verbatim in the near future.  that code is under
-;;  GPL v2, so the rest of this file is (for the time being)
-(defun httpd/switch-buffer(uri-query req uri-path)
-  "Switch to the requested buffer."
-  (let ((buffer (get-buffer (cadar uri-query)))
-	(cb (current-buffer)))
-    (switch-to-buffer buffer)
-    (set-buffer cb)
-    (httpd/list-buffers uri-query req uri-path)))
+(defun get-window-with-id (window-id)
+  (get-window-with-predicate
+   (lambda (w)
+     (when (= (window-parameter w 'window-id) window-id)
+       w)) nil t))
+
+;; the following functions are GETs with side-effects, which is very bad of us.
+;; even worse, they just return empty junk.
+
+(defun httpd/select-window (uri-query req uri-path)
+  "Select the window identified by the given window-id."
+  (select-window (get-window-with-id (string-to-number (cadr (assoc "window" uri-query)))))
+  "text/plain")
+
+(defun httpd/show-buffer-in-window (uri-query req uri-path)
+  "Make the referenced buffer visible in the referenced window."
+  (let ((buffer (get-buffer (cadr (assoc "buffer" uri-query))))
+        (window (get-window-with-id (string-to-number (cadr (assoc "window" uri-query))))))
+    (set-window-buffer window buffer)
+    "text/plain"))
+
